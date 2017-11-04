@@ -164,8 +164,7 @@ int main()
 		auto time = benchmark([&] {
 			// generate object hierarchy for serialization
 			object = create_object();
-			stream.str.clear();
-			stream.str.shrink_to_fit();
+			stream = deco::OutputStream_Indent();
 		}, [&stream, &object]{
 			gs::serialize(stream, object);
 		});
@@ -178,17 +177,17 @@ int main()
 
 	// read file
 	{
-		deco::InputStream stream({
+		std::string file_str{
 			std::istreambuf_iterator<char>(std::ifstream("out.deco", std::ios::binary)),
-			std::istreambuf_iterator<char>()
-		});
+			std::istreambuf_iterator<char>()};
 
+		auto stream = deco::InputStream(file_str.cbegin());
 
 		Object parsed_object;
 
 		// benchmark parsing
 		auto time = benchmark([&] {
-			stream = deco::InputStream(std::move(stream.str));
+			stream = deco::InputStream(file_str.cbegin());
 			parsed_object = Object();
 		}, [&stream, &parsed_object] {
 			gs::serialize(stream, parsed_object);
