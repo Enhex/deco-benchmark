@@ -3,6 +3,8 @@
 #include <chrono>
 #include <deco/NVP.h>
 #include <deco/escaped_string.h>
+#include <deco/set.h>
+#include <deco/vector.h>
 #include <fstream>
 #include <iostream>
 #include <random>
@@ -93,15 +95,15 @@ namespace gs
 		auto s = [&stream](auto& v) {serialize(stream, v); };
 //#define DECO_LABELED_OBJECT
 #ifdef DECO_LABELED_OBJECT
-		s(make_CNVP("i", value.i));
-		s(make_CNVP("f", value.f));
-		s(make_CNVP("s", value.s));
-		s(make_NVP("v", value.v));
+		s(make_NVP("i", value.i));
+		s(make_NVP("f", value.f));
+		s(make_NVP("s", value.s));
+		s(make_set("v", value.v));
 #else
 		s(value.i);
 		s(value.f);
 		s(static_cast<escaped_string&>(value.s)); // must escape to read back equal string
-		s(make_NVP("", value.v));	// must serialize as a set
+		s(make_set("", value.v));	// must serialize as a set
 #endif
 	}
 }
@@ -119,12 +121,18 @@ Object random_object() {
 Object create_object()
 {
 	auto object = random_object();
-	for (int i = 0; i < 5762; ++i) {
+	auto constexpr num_children = 5762;
+	object.v.reserve(num_children);
+	for (int i = 0; i < num_children; ++i) {
 		auto& child = object.v.emplace_back(random_object());
+		auto constexpr num_children = 4;
+		child.v.reserve(num_children);
 		// children with children
-		for (int i = 0; i < 4; ++i) {
+		for (int i = 0; i < num_children; ++i) {
 			auto& child_child = child.v.emplace_back(random_object());
-			for (int i = 0; i < 2; ++i) {
+			auto constexpr num_children = 2;
+			child_child.v.reserve(num_children);
+			for (int i = 0; i < num_children; ++i) {
 				child_child.v.emplace_back(random_object());
 				/*
 				// deep nesting
@@ -205,4 +213,5 @@ int main()
 
 		assert(object == parsed_object);
 	}
+	//std::getchar();
 }
