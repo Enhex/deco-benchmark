@@ -2,6 +2,7 @@
 #include <cctype>
 #include <chrono>
 #include <deco/NVP.h>
+#include <deco/escaped_string.h>
 #include <fstream>
 #include <iostream>
 #include <random>
@@ -90,11 +91,18 @@ namespace gs
 	void serialize(Stream& stream, Object& value) {
 		using namespace deco;
 		auto s = [&stream](auto& v) {serialize(stream, v); };
+//#define DECO_LABELED_OBJECT
+#ifdef DECO_LABELED_OBJECT
 		s(make_CNVP("i", value.i));
 		s(make_CNVP("f", value.f));
 		s(make_CNVP("s", value.s));
-		//s(escape_content(value.s));
 		s(make_NVP("v", value.v));
+#else
+		s(value.i);
+		s(value.f);
+		s(static_cast<escaped_string&>(value.s)); // must escape to read back equal string
+		s(make_NVP("", value.v));	// must serialize as a set
+#endif
 	}
 }
 
@@ -161,7 +169,7 @@ int main()
 		deco::OutputStream_Indent stream;
 
 		// benchmark serialization
-		auto time = benchmark([&] {
+		const auto time = benchmark([&] {
 			// generate object hierarchy for serialization
 			object = create_object();
 			stream = deco::OutputStream_Indent();
@@ -186,7 +194,7 @@ int main()
 		Object parsed_object;
 
 		// benchmark parsing
-		auto time = benchmark([&] {
+		const auto time = benchmark([&] {
 			stream = deco::InputStream(file_str.cbegin());
 			parsed_object = Object();
 		}, [&stream, &parsed_object] {
