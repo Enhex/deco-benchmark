@@ -2,8 +2,8 @@
 #include <cctype>
 #include <chrono>
 #include <deco/NVP.h>
-#include <deco/escaped_string.h>
 #include <deco/set.h>
+#include <deco/string.h>
 #include <deco/vector.h>
 #include <fstream>
 #include <iostream>
@@ -93,7 +93,7 @@ namespace gs
 	void serialize(Stream& stream, Object& value) {
 		using namespace deco;
 		auto s = [&stream](auto& v) {serialize(stream, v); };
-//#define DECO_LABELED_OBJECT
+#define DECO_LABELED_OBJECT
 #ifdef DECO_LABELED_OBJECT
 		s(make_NVP("i", value.i));
 		s(make_NVP("f", value.f));
@@ -102,7 +102,7 @@ namespace gs
 #else
 		s(value.i);
 		s(value.f);
-		s(static_cast<escaped_string&>(value.s)); // must escape to read back equal string
+		s(value.s);
 		s(make_set("", value.v));	// must serialize as a set
 #endif
 	}
