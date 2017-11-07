@@ -10,6 +10,8 @@
 #include <random>
 #include <string>
 
+#include <gs/include_last.h>
+
 const auto graphical_characters = []() {
 	std::vector<char> chars;
 
