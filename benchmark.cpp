@@ -2,6 +2,7 @@
 #include <cctype>
 #include <chrono>
 #include <deco/NVP.h>
+#include <deco/arithmetic.h>
 #include <deco/set.h>
 #include <deco/string.h>
 #include <deco/vector.h>
@@ -9,8 +10,6 @@
 #include <iostream>
 #include <random>
 #include <string>
-
-#include <gs/include_last.h>
 
 const auto graphical_characters = []() {
 	std::vector<char> chars;
@@ -92,20 +91,20 @@ bool operator==(const Object& a, const Object& b)
 namespace gs
 {
 	template<typename Stream>
-	void serialize(Stream& stream, Object& value) {
+	void serialize(Serializer<Stream>& serializer, Object& value) {
 		using namespace deco;
-		auto s = [&stream](auto& v) {serialize(stream, v); };
+		serializer(
 #define DECO_LABELED_OBJECT
 #ifdef DECO_LABELED_OBJECT
-		s(make_NVP("i", value.i));
-		s(make_NVP("f", value.f));
-		s(make_NVP("s", value.s));
-		s(make_set("v", value.v));
+			make_NVP("i", value.i),
+			make_NVP("f", value.f),
+			make_NVP("s", value.s),
+			make_set("v", value.v));
 #else
-		s(value.i);
-		s(value.f);
-		s(value.s);
-		s(make_set("", value.v));	// must serialize as a set
+			value.i,
+			value.f,
+			value.s,
+			make_set("", value.v));	// must serialize as a set
 #endif
 	}
 }
@@ -177,14 +176,15 @@ int main()
 	// write file
 	{
 		deco::OutputStream_Indent stream;
+		auto serializer = gs::make_serializer(stream);
 
 		// benchmark serialization
 		const auto time = benchmark([&] {
 			// generate object hierarchy for serialization
 			object = create_object();
 			stream = deco::OutputStream_Indent();
-		}, [&stream, &object]{
-			gs::serialize(stream, object);
+		}, [&serializer, &object]{
+			serializer(object);
 		});
 
 		std::cout << "serialize: " << time / 1000.f << "ms" << '\n';
@@ -200,6 +200,7 @@ int main()
 			std::istreambuf_iterator<char>()};
 
 		auto stream = deco::InputStream(file_str.cbegin());
+		auto serializer = gs::make_serializer(stream);
 
 		Object parsed_object;
 
@@ -207,8 +208,8 @@ int main()
 		const auto time = benchmark([&] {
 			stream = deco::InputStream(file_str.cbegin());
 			parsed_object = Object();
-		}, [&stream, &parsed_object] {
-			gs::serialize(stream, parsed_object);
+		}, [&serializer, &parsed_object] {
+			serializer(parsed_object);
 		});
 
 		std::cout << "parse: " << time / 1000.f << "ms" << '\n';
