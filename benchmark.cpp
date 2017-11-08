@@ -91,10 +91,11 @@ bool operator==(const Object& a, const Object& b)
 namespace gs
 {
 	template<typename Stream> constexpr
-	void serialize(Serializer<Stream>& serializer, Object& value) {
+	void serialize(Stream& stream, Object& value) {
 		using namespace deco;
 		using namespace std;
-		serializer(
+
+		gs::serializer(stream,
 #define DECO_LABELED_OBJECT
 #ifdef DECO_LABELED_OBJECT
 			make_NVP("i"sv, value.i),
@@ -177,15 +178,14 @@ int main()
 	// write file
 	{
 		deco::OutputStream_Indent stream;
-		auto serializer = gs::make_serializer(stream);
 
 		// benchmark serialization
 		const auto time = benchmark([&] {
 			// generate object hierarchy for serialization
 			object = create_object();
 			stream = deco::OutputStream_Indent();
-		}, [&serializer, &object]{
-			serializer(object);
+		}, [&stream, &object]{
+			gs::serializer(stream, object);
 		});
 
 		std::cout << "serialize: " << time / 1000.f << "ms" << '\n';
@@ -201,7 +201,6 @@ int main()
 			std::istreambuf_iterator<char>()};
 
 		auto stream = deco::InputStream(file_str.cbegin());
-		auto serializer = gs::make_serializer(stream);
 
 		Object parsed_object;
 
@@ -209,8 +208,8 @@ int main()
 		const auto time = benchmark([&] {
 			stream = deco::InputStream(file_str.cbegin());
 			parsed_object = Object();
-		}, [&serializer, &parsed_object] {
-			serializer(parsed_object);
+		}, [&stream, &parsed_object] {
+			gs::serializer(stream, parsed_object);
 		});
 
 		std::cout << "parse: " << time / 1000.f << "ms" << '\n';
