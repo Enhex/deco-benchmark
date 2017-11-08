@@ -106,7 +106,7 @@ namespace gs
 			value.i,
 			value.f,
 			value.s,
-			make_set("", value.v));	// must serialize as a set
+			make_set(value.v));	// must serialize as a set
 #endif
 	}
 }
