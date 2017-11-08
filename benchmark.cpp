@@ -2,10 +2,10 @@
 #include <cctype>
 #include <chrono>
 #include <deco/NVP.h>
-#include <deco/arithmetic.h>
 #include <deco/set.h>
-#include <deco/string.h>
-#include <deco/vector.h>
+#include <deco/types/arithmetic.h>
+#include <deco/types/string.h>
+#include <deco/types/vector.h>
 #include <fstream>
 #include <iostream>
 #include <random>
@@ -90,16 +90,17 @@ bool operator==(const Object& a, const Object& b)
 
 namespace gs
 {
-	template<typename Stream>
+	template<typename Stream> constexpr
 	void serialize(Serializer<Stream>& serializer, Object& value) {
 		using namespace deco;
+		using namespace std;
 		serializer(
 #define DECO_LABELED_OBJECT
 #ifdef DECO_LABELED_OBJECT
-			make_NVP("i", value.i),
-			make_NVP("f", value.f),
-			make_NVP("s", value.s),
-			make_set("v", value.v));
+			make_NVP("i"sv, value.i),
+			make_NVP("f"sv, value.f),
+			make_NVP("s"sv, value.s),
+			make_set("v"sv, value.v));
 #else
 			value.i,
 			value.f,
