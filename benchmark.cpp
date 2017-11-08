@@ -196,8 +196,9 @@ int main()
 
 	// read file
 	{
+		auto file = std::ifstream("out.deco", std::ios::binary);
 		std::string file_str{
-			std::istreambuf_iterator<char>(std::ifstream("out.deco", std::ios::binary)),
+			std::istreambuf_iterator<char>(file),
 			std::istreambuf_iterator<char>()};
 
 		auto stream = deco::InputStream(file_str.cbegin());
