@@ -177,13 +177,13 @@ int main()
 
 	// write file
 	{
-		deco::OutputStream_Indent stream;
+		deco::OutputStream_indent stream;
 
 		// benchmark serialization
 		const auto time = benchmark([&] {
 			// generate object hierarchy for serialization
 			object = create_object();
-			stream = deco::OutputStream_Indent();
+			stream = deco::OutputStream_indent();
 		}, [&stream, &object]{
 			gs::serializer(stream, object);
 		});
