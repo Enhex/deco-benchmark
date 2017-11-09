@@ -93,11 +93,14 @@ namespace gs
 	template<typename Stream> constexpr
 	void serialize(Stream& stream, Object& value) {
 		using namespace deco;
-		using namespace std;
+		using namespace std::literals;
 
+//#define	DECO_USE_SERIALIZER
+#define	DECO_LABELED_OBJECT
+
+#ifdef	DECO_USE_SERIALIZER
 		gs::serializer(stream,
-#define DECO_LABELED_OBJECT
-#ifdef DECO_LABELED_OBJECT
+#ifdef	DECO_LABELED_OBJECT
 			make_NVP("i"sv, value.i),
 			make_NVP("f"sv, value.f),
 			make_NVP("s"sv, value.s),
@@ -107,6 +110,19 @@ namespace gs
 			value.f,
 			value.s,
 			make_set(value.v));	// must serialize as a set
+#endif
+#else
+#ifdef	DECO_LABELED_OBJECT
+		gs::serialize(stream, make_NVP("i"sv, value.i));
+		gs::serialize(stream, make_NVP("f"sv, value.f));
+		gs::serialize(stream, make_NVP("s"sv, value.s));
+		gs::serialize(stream, make_set("v"sv, value.v));
+#else
+		gs::serialize(stream, value.i);
+		gs::serialize(stream, value.f);
+		gs::serialize(stream, value.s);
+		gs::serialize(stream, make_set(value.v));	// must serialize as a set
+#endif
 #endif
 	}
 }
@@ -210,7 +226,7 @@ int main()
 			stream = deco::InputStream(file_str.cbegin());
 			parsed_object = Object();
 		}, [&stream, &parsed_object] {
-			gs::serializer(stream, parsed_object);
+			gs::serialize(stream, parsed_object);
 		});
 
 		std::cout << "parse: " << time / 1000.f << "ms" << '\n';
