@@ -217,13 +217,13 @@ int main()
 			std::istreambuf_iterator<char>(file),
 			std::istreambuf_iterator<char>()};
 
-		auto stream = deco::InputStream(file_str.cbegin());
+		auto stream = deco::make_InputStream(file_str.cbegin());
 
 		Object parsed_object;
 
 		// benchmark parsing
 		const auto time = benchmark([&] {
-			stream = deco::InputStream(file_str.cbegin());
+			stream = deco::make_InputStream(file_str.cbegin());
 			parsed_object = Object();
 		}, [&stream, &parsed_object] {
 			gs::serialize(stream, parsed_object);
