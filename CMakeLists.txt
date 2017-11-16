@@ -18,6 +18,6 @@ conan_target_link_libraries(benchmark)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT benchmark)
 if (MSVC)
-	set_target_properties(benchmark PROPERTIES COMPILE_FLAGS "/GL")
+	set_target_properties(benchmark PROPERTIES COMPILE_FLAGS "/GL /permissive-")
 	set_target_properties(benchmark PROPERTIES LINK_FLAGS "/LTCG")
 endif(MSVC)

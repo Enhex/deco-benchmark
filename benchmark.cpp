@@ -7,6 +7,7 @@
 #include <deco/types/string.h>
 #include <deco/types/vector.h>
 #include <fstream>
+#include <gs/serializer.h>
 #include <iostream>
 #include <random>
 #include <string>
@@ -88,11 +89,10 @@ bool operator==(const Object& a, const Object& b)
 		a.v == b.v;
 }
 
-namespace gs
+namespace deco
 {
 	template<typename Stream> constexpr
 	void serialize(Stream& stream, Object& value) {
-		using namespace deco;
 		using namespace std::literals;
 
 //#define	DECO_USE_SERIALIZER
@@ -113,15 +113,15 @@ namespace gs
 #endif
 #else
 #ifdef	DECO_LABELED_OBJECT
-		gs::serialize(stream, make_NVP("i"sv, value.i));
-		gs::serialize(stream, make_NVP("f"sv, value.f));
-		gs::serialize(stream, make_NVP("s"sv, value.s));
-		gs::serialize(stream, make_set("v"sv, value.v));
+		serialize(stream, make_NVP("i"sv, value.i));
+		serialize(stream, make_NVP("f"sv, value.f));
+		serialize(stream, make_NVP("s"sv, value.s));
+		serialize(stream, make_set("v"sv, value.v));
 #else
-		gs::serialize(stream, value.i);
-		gs::serialize(stream, value.f);
-		gs::serialize(stream, value.s);
-		gs::serialize(stream, make_set(value.v));	// must serialize as a set
+		serialize(stream, value.i);
+		serialize(stream, value.f);
+		serialize(stream, value.s);
+		serialize(stream, make_set(value.v));	// must serialize as a set
 #endif
 #endif
 	}
@@ -226,7 +226,7 @@ int main()
 			stream = deco::make_InputStream(file_str.cbegin());
 			parsed_object = Object();
 		}, [&stream, &parsed_object] {
-			gs::serialize(stream, parsed_object);
+			deco::serialize(stream, parsed_object);
 		});
 
 		std::cout << "parse: " << time / 1000.f << "ms" << '\n';
