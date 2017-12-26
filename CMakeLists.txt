@@ -13,11 +13,19 @@ include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
 project(benchmark)
 conan_basic_setup()
 
-add_executable(benchmark benchmark.cpp)
-conan_target_link_libraries(benchmark)
+file(GLOB_RECURSE SourceFiles
+    "src/*.cpp"
+    "src/*.h"
+    "src/*.hpp"
+)
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT benchmark)
+
+set(TargetName benchmark)
+add_executable(${TargetName} ${SourceFiles})
+conan_target_link_libraries(${TargetName})
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TargetName})
 if (MSVC)
-	set_target_properties(benchmark PROPERTIES COMPILE_FLAGS "/GL /permissive-")
-	set_target_properties(benchmark PROPERTIES LINK_FLAGS "/LTCG")
+	set_target_properties(${TargetName} PROPERTIES COMPILE_FLAGS "/GL")
+	set_target_properties(${TargetName} PROPERTIES LINK_FLAGS "/LTCG")
 endif(MSVC)
