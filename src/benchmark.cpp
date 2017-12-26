@@ -103,9 +103,10 @@ BenchmarkResult benchmark_json()
 
 	// read file
 	{
+		std::ifstream is(file_name, std::ios::binary);
 		std::istringstream file_str({
-			std::istreambuf_iterator<char>(std::ifstream(file_name, std::ios::binary)),
-			std::istreambuf_iterator<char>() });
+			std::istreambuf_iterator<char>(is),
+			std::istreambuf_iterator<char>()});
 
 		result.file_size = file_str.str().size();
 
@@ -160,9 +161,10 @@ BenchmarkResult benchmark_xml()
 
 	// read file
 	{
+		std::ifstream is(file_name, std::ios::binary);
 		std::istringstream file_str({
-			std::istreambuf_iterator<char>(std::ifstream(file_name, std::ios::binary)),
-			std::istreambuf_iterator<char>() });
+			std::istreambuf_iterator<char>(is),
+			std::istreambuf_iterator<char>()});
 
 		result.file_size = file_str.str().size();
 
