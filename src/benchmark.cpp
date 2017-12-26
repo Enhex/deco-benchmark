@@ -16,8 +16,18 @@
 #include <iostream>
 
 
-void benchmark_deco()
+struct BenchmarkResult {
+	size_t file_size = 0;
+	long long output_time = 0, input_time = 0;
+};
+
+
+BenchmarkResult benchmark_deco()
 {
+	BenchmarkResult result;
+
+	seed_rng(0);
+
 	Object object;
 
 	// write file
@@ -33,7 +43,7 @@ void benchmark_deco()
 			deco::serialize(stream, object);
 		});
 
-		std::cout << "serialize: " << time / 1000.f << "ms\n";
+		result.output_time = time;
 
 		std::ofstream os("out.deco", std::ios::binary);
 		os << stream.str;
@@ -45,6 +55,8 @@ void benchmark_deco()
 		std::string file_str{
 			std::istreambuf_iterator<char>(file),
 			std::istreambuf_iterator<char>()};
+
+		result.file_size = file_str.size();
 
 		auto stream = deco::make_InputStream(file_str.cbegin());
 
@@ -58,14 +70,20 @@ void benchmark_deco()
 			deco::serialize(stream, parsed_object);
 		});
 
-		std::cout << "parse: " << time / 1000.f << "ms\n";
+		result.input_time = time;
 
 		assert(object == parsed_object);
 	}
+
+	return result;
 }
 
-void benchmark_json()
+BenchmarkResult benchmark_json()
 {
+	BenchmarkResult result;
+
+	seed_rng(0);
+
 	Object object;
 
 	const cereal::JSONOutputArchive::Options archive_options = cereal::JSONOutputArchive::Options(std::numeric_limits<double>::max_digits10, cereal::JSONOutputArchive::Options::IndentChar::tab, 1);
@@ -84,7 +102,7 @@ void benchmark_json()
 			cereal::serialize(archive, object);
 		});
 
-		std::cout << "serialize: " << time / 1000.f << "ms\n";
+		result.output_time = time;
 
 		std::ofstream os(file_name, std::ios::binary);
 		os << file_str.str();
@@ -96,6 +114,8 @@ void benchmark_json()
 			std::istreambuf_iterator<char>(std::ifstream(file_name, std::ios::binary)),
 			std::istreambuf_iterator<char>() });
 
+		result.file_size = file_str.str().size();
+
 		Object parsed_object;
 
 		// benchmark parsing
@@ -106,14 +126,20 @@ void benchmark_json()
 			cereal::serialize(archive, parsed_object);
 		});
 
-		std::cout << "parse: " << time / 1000.f << "ms\n";
+		result.input_time = time;
 
 		assert(object == parsed_object);
 	}
+
+	return result;
 }
 
-void benchmark_xml()
+BenchmarkResult benchmark_xml()
 {
+	BenchmarkResult result;
+
+	seed_rng(0);
+
 	Object object;
 
 	const cereal::XMLOutputArchive::Options archive_options = cereal::XMLOutputArchive::Options(std::numeric_limits<double>::max_digits10);
@@ -133,7 +159,7 @@ void benchmark_xml()
 			cereal::serialize(archive, object);
 		});
 
-		std::cout << "serialize: " << time / 1000.f << "ms\n";
+		result.output_time = time;
 
 		std::ofstream os(file_name, std::ios::binary);
 		os << file_str.str();
@@ -145,6 +171,8 @@ void benchmark_xml()
 			std::istreambuf_iterator<char>(std::ifstream(file_name, std::ios::binary)),
 			std::istreambuf_iterator<char>() });
 
+		result.file_size = file_str.str().size();
+
 		Object parsed_object;
 
 		// benchmark parsing
@@ -155,22 +183,53 @@ void benchmark_xml()
 			cereal::serialize(archive, parsed_object);
 		});
 
-		std::cout << "parse: " << time / 1000.f << "ms\n";
+		result.input_time = time;
 
 		assert(object == parsed_object);
 	}
+
+	return result;
+}
+
+
+void print_result(const BenchmarkResult& result)
+{
+	std::cout
+		<< "file size: " << result.file_size << " bytes\n"
+		<< "serialize: " << result.output_time / 1000.f << "ms\n"
+		<< "parse: " << result.input_time / 1000.f << "ms\n"
+		;
+}
+
+auto file_size_diff(size_t a, size_t b)
+{
+	return 1 - a / float(b);
 }
 
 int main()
 {
-	std::puts("deco");
-	benchmark_deco();
+	std::puts("Deco");
+	const auto deco_result = benchmark_deco();
+	print_result(deco_result);
 	
-	std::puts("json");
-	benchmark_json();
+	std::puts("\nJSON");
+	const auto json_result = benchmark_json();
+	print_result(json_result);
 
-	std::puts("xml");
-	benchmark_xml();
+	std::puts("\nXML");
+	const auto xml_result = benchmark_xml();
+	print_result(xml_result);
+
+	std::cout
+		<< "\n"
+		<< "Deco is:\n"
+		<< file_size_diff(deco_result.file_size, json_result.file_size) * 100.f	<< "% smaller than JSON\n"
+		<< json_result.output_time / float(deco_result.output_time) * 100.f		<< "% faster output than JSON\n"
+		<< json_result.input_time / float(deco_result.input_time) * 100.f		<< "% faster input than JSON\n"
+		<< file_size_diff(deco_result.file_size, xml_result.file_size) * 100.f	<< "% smaller than XML\n"
+		<< xml_result.output_time / float(deco_result.output_time) * 100.f		<< "% faster output than XML\n"
+		<< xml_result.input_time / float(deco_result.input_time) * 100.f		<< "% faster input than XML\n"
+		;
 
 	//std::getchar();	// pause
 }

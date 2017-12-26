@@ -3,6 +3,8 @@
 #include <string>
 #include <chrono>
 
+void seed_rng(unsigned seed);
+
 int random_int();
 
 int random_int(int max);

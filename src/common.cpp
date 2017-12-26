@@ -31,6 +31,11 @@ auto distribution_float = std::uniform_real_distribution<float>(-10000, 10000);
 auto distribution_graph_char = std::uniform_int_distribution<unsigned short>(0, (unsigned short)graphical_characters.size() - 1);
 
 
+void seed_rng(unsigned seed)
+{
+	rng.seed(seed);
+}
+
 int random_int() {
 	return distribution_int(rng);
 };
