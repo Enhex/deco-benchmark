@@ -32,7 +32,7 @@ Object random_object() {
 Object create_object()
 {
 	auto object = random_object();
-	auto constexpr num_children = 5762;
+	auto constexpr num_children = 500;
 	object.v.reserve(num_children);
 	for (int i = 0; i < num_children; ++i) {
 		auto& child = object.v.emplace_back(random_object());

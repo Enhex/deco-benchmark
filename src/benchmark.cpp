@@ -9,6 +9,9 @@
 #include <iostream>
 
 
+constexpr unsigned benchmark_iterations = 10;
+
+
 struct BenchmarkResult {
 	size_t file_size = 0;
 	long long output_time = 0, input_time = 0;
@@ -34,7 +37,7 @@ BenchmarkResult benchmark_deco()
 			stream = deco::OutputStream_indent();
 		}, [&stream, &object]{
 			deco::serialize(stream, object);
-		});
+		}, benchmark_iterations);
 
 		result.output_time = time;
 
@@ -61,7 +64,7 @@ BenchmarkResult benchmark_deco()
 			parsed_object = Object();
 		}, [&stream, &parsed_object] {
 			deco::serialize(stream, parsed_object);
-		});
+		}, benchmark_iterations);
 
 		result.input_time = time;
 
@@ -88,37 +91,37 @@ BenchmarkResult benchmark_json()
 
 		// benchmark serialization
 		const auto time = benchmark([&] {
-			// generate object hierarchy for serialization
-			object = create_object();
+			object = create_object();	// generate object hierarchy for serialization
+			file_str = std::ostringstream();
 		}, [&file_str, &object, &archive_options] {
 			cereal::JSONOutputArchive archive(file_str, archive_options);
 			cereal::serialize(archive, object);
-		});
+		}, benchmark_iterations);
 
 		result.output_time = time;
 
 		std::ofstream os(file_name, std::ios::binary);
 		os << file_str.str();
+
+		result.file_size = file_str.str().size();
 	}
 
 	// read file
 	{
-		std::ifstream is(file_name, std::ios::binary);
-		std::istringstream file_str({
-			std::istreambuf_iterator<char>(is),
-			std::istreambuf_iterator<char>()});
-
-		result.file_size = file_str.str().size();
-
+		std::istringstream file_str;
 		Object parsed_object;
 
 		// benchmark parsing
 		const auto time = benchmark([&] {
 			parsed_object = Object();
+			std::ifstream is(file_name, std::ios::binary);
+			file_str = std::istringstream({
+				std::istreambuf_iterator<char>(is),
+				std::istreambuf_iterator<char>()});
 		}, [&file_str, &parsed_object] {
 			cereal::JSONInputArchive archive(file_str);
 			cereal::serialize(archive, parsed_object);
-		});
+		}, benchmark_iterations);
 
 		result.input_time = time;
 
@@ -146,37 +149,37 @@ BenchmarkResult benchmark_xml()
 
 		// benchmark serialization
 		const auto time = benchmark([&] {
-			// generate object hierarchy for serialization
-			object = create_object();
+			object = create_object();	// generate object hierarchy for serialization
+			file_str = std::ostringstream();
 		}, [&file_str, &object, &archive_options] {
 			cereal::XMLOutputArchive archive(file_str, archive_options);
 			cereal::serialize(archive, object);
-		});
+		}, benchmark_iterations);
 
 		result.output_time = time;
 
 		std::ofstream os(file_name, std::ios::binary);
 		os << file_str.str();
+
+		result.file_size = file_str.str().size();
 	}
 
 	// read file
 	{
-		std::ifstream is(file_name, std::ios::binary);
-		std::istringstream file_str({
-			std::istreambuf_iterator<char>(is),
-			std::istreambuf_iterator<char>()});
-
-		result.file_size = file_str.str().size();
-
+		std::istringstream file_str;
 		Object parsed_object;
 
 		// benchmark parsing
 		const auto time = benchmark([&] {
 			parsed_object = Object();
+			std::ifstream is(file_name, std::ios::binary);
+			file_str = std::istringstream({
+				std::istreambuf_iterator<char>(is),
+				std::istreambuf_iterator<char>()});
 		}, [&file_str, &parsed_object] {
 			cereal::XMLInputArchive archive(file_str);
 			cereal::serialize(archive, parsed_object);
-		});
+		}, benchmark_iterations);
 
 		result.input_time = time;
 
