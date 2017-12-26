@@ -19,6 +19,7 @@ file(GLOB_RECURSE SourceFiles
     "src/*.hpp"
 )
 
+add_definitions(-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)	# for Cereal
 
 set(TargetName benchmark)
 add_executable(${TargetName} ${SourceFiles})

@@ -1,5 +1,6 @@
 [requires]
 Deco/master@enhex/stable
+cereal/master@enhex/stable
 
 [generators]
 cmake

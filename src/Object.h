@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <cereal/types/vector.hpp>
 
 // test class
 struct Object {
@@ -48,6 +49,24 @@ namespace deco
 		serialize(stream, value.s);
 		serialize(stream, make_set(value.v));	// must serialize as a set
 #endif
+#endif
+	}
+}
+
+namespace cereal
+{
+	template<class Archive>
+	void serialize(Archive & archive, Object & value)
+	{
+#define CEREAL_LABELED_OBJECT
+#ifdef CEREAL_LABELED_OBJECT
+		archive(
+			cereal::make_nvp("i", value.i),
+			cereal::make_nvp("f", value.f),
+			cereal::make_nvp("s", value.s),
+			cereal::make_nvp("v", value.v));
+#else
+		archive(value.i, value.f, value.s, value.v);
 #endif
 	}
 }
