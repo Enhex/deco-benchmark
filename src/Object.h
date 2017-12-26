@@ -1,7 +1,9 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <deco/NVP.h>
+#include <deco/set.h>
+#include <deco/types/vector.h>
+
 #include <cereal/types/vector.hpp>
 
 // test class
