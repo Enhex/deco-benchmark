@@ -18,24 +18,24 @@ Output:
 ```
 Deco
 file size: 406300 bytes
-serialize: 30.576ms
-parse: 15.797ms
+serialize: 30.023ms
+parse: 15.175ms
 
 JSON
 file size: 698835 bytes
-serialize: 239.433ms
-parse: 336.594ms
+serialize: 239.332ms
+parse: 338.009ms
 
 XML
 file size: 898996 bytes
-serialize: 425.198ms
-parse: 171.65ms
+serialize: 432.129ms
+parse: 171.646ms
 
 Deco is:
 41.8604% smaller than JSON
-783.075% faster output than JSON
-2130.75% faster input than JSON
+797.162% faster output than JSON
+2227.41% faster input than JSON
 54.8051% smaller than XML
-1390.63% faster output than XML
-1086.6% faster input than XML
+1439.33% faster output than XML
+1131.11% faster input than XML
 ```
