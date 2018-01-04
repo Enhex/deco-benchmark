@@ -1,7 +1,7 @@
 #pragma once
 
 #include <deco/NVP.h>
-#include <deco/set.h>
+#include <deco/list.h>
 #include <deco/types/vector.h>
 
 #include <cereal/types/vector.hpp>
@@ -32,24 +32,24 @@ namespace deco
 			make_NVP("i"sv, value.i),
 			make_NVP("f"sv, value.f),
 			make_NVP("s"sv, value.s),
-			make_set("v"sv, value.v));
+			make_list("v"sv, value.v));
 #else
 			value.i,
 			value.f,
 			value.s,
-			make_set(value.v));	// must serialize as a set
+			make_list(value.v));	// must serialize as a list
 #endif
 #else
 #ifdef	DECO_LABELED_OBJECT
 		serialize(stream, make_NVP("i"sv, value.i));
 		serialize(stream, make_NVP("f"sv, value.f));
 		serialize(stream, make_NVP("s"sv, value.s));
-		serialize(stream, make_set("v"sv, value.v));
+		serialize(stream, make_list("v"sv, value.v));
 #else
 		serialize(stream, value.i);
 		serialize(stream, value.f);
 		serialize(stream, value.s);
-		serialize(stream, make_set(value.v));	// must serialize as a set
+		serialize(stream, make_list(value.v));	// must serialize as a list
 #endif
 #endif
 	}
