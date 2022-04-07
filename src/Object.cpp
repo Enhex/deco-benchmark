@@ -5,13 +5,14 @@
 
 bool operator==(const Object& a, const Object& b)
 {
-	const float error_margin = abs(std::max(a.f, b.f) / 100000.f);
+	const double error_margin = 1 / 100.f;
 
 #ifdef _DEBUG
 	auto t1 = a.i == b.i;
 	auto t2 = std::abs(a.f - b.f) <= error_margin;
 	auto t3 = a.s == b.s;
 	auto t = t1 && t2 && t3;
+	assert(t);
 #endif
 
 	return
