@@ -209,7 +209,7 @@ int main()
 	std::puts("Deco");
 	const auto deco_result = benchmark_deco();
 	print_result(deco_result);
-	
+
 	std::puts("\nJSON");
 	const auto json_result = benchmark_json();
 	print_result(json_result);
