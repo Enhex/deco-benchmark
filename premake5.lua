@@ -32,5 +32,5 @@ workspace("benchmark")
 
 		filter "configurations:Release"
 			defines { "NDEBUG" }
-			optimize "On"
+			optimize "Full"
             flags {"LinkTimeOptimization"}
