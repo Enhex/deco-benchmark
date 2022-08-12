@@ -9,33 +9,37 @@ Input/Output measures serialization from/to in memory string, excluding file I/O
 
 ## Results
 
-Setup:
-- OS: Windows 10 64-bit
-- Compiler: Visual Studio 15.5, x64 build
-- CPU: i7-6700K
-
-Output:
 ```
 Deco
-file size: 406300 bytes
-serialize: 30.023ms
-parse: 15.175ms
+file size: 384429 bytes
+serialize: 40.648ms
+parse: 23.315ms
 
 JSON
-file size: 698835 bytes
-serialize: 239.332ms
-parse: 338.009ms
+file size: 697990 bytes
+serialize: 155.718ms
+parse: 135.465ms
 
 XML
-file size: 898996 bytes
-serialize: 432.129ms
-parse: 171.646ms
+file size: 898130 bytes
+serialize: 401.989ms
+parse: 182.24ms
+
+YAML
+file size: 632686 bytes
+serialize: 911.55ms
+parse: 3015.99ms
 
 Deco is:
-41.8604% smaller than JSON
-797.162% faster output than JSON
-2227.41% faster input than JSON
-54.8051% smaller than XML
-1439.33% faster output than XML
-1131.11% faster input than XML
+44.9234% smaller than JSON
+383.089% faster output than JSON
+581.021% faster input than JSON
+
+57.1967% smaller than XML
+988.951% faster output than XML
+781.643% faster input than XML
+
+39.2386% smaller than YAML
+2242.55% faster output than YAML
+12935.9% faster input than YAML
 ```
