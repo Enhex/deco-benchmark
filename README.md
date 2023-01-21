@@ -1,6 +1,7 @@
 # Deco Benchmark
 
-Benchmarks Deco againt JSON and XML, using [Cereal library](https://uscilab.github.io/cereal/) which internally uses RapidJSON and RapidXML.
+Benchmarks Deco against JSON and XML, using [Cereal library](https://uscilab.github.io/cereal/) which internally uses RapidJSON and RapidXML,
+and YAML using [yaml-cpp](https://github.com/jbeder/yaml-cpp).
 
 The benchmark generates objects with random content with up to 3 levels of indented nesting.
 
